@@ -22,9 +22,7 @@ public class EntityManager : MonoBehaviour
                     _instance = container.AddComponent(typeof(EntityManager)) as EntityManager;
                 }
             }
-
-
-
+            
             return _instance;
         }
     }
