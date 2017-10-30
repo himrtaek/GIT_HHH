@@ -4,31 +4,30 @@ using UnityEngine;
 
 public class PlayerObject : MonoBehaviour {
 
+    public float moveSpeed = 6.0f;
+    public float jumpForce = 2000.0f;
+
     bool isJumping = false;
     bool isLeftMove = false;
-    float moveSpeed = 6.0f;
-    float jumpForce = 2000.0f;
-    public Transform groundCheck;
 
-    KeyCode turnKeyCode = KeyCode.Space;
+    public Transform[] groundCheck;
+
+    KeyCode turnKeyCode = KeyCode.L;
     KeyCode jumpKeyCode = KeyCode.A;
 
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
+	void FixedUpdate ()
+    {
         ProcessAutoMove(Time.deltaTime * moveSpeed);
+	}
 
+    void Update()
+    {
         if (IsKeyDown(turnKeyCode))
         {
             Turn();
         }
 
-        if(IsGrounded())
+        if (IsGrounded())
         {
             isJumping = false;
             GetComponent<SpriteRenderer>().color = new Color(255, 255, 255);
@@ -38,11 +37,11 @@ public class PlayerObject : MonoBehaviour {
             GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
         }
 
-        if(IsKeyDown(jumpKeyCode) && IsCanJump())
+        if (IsKeyDown(jumpKeyCode) && IsCanJump())
         {
             Jump();
         }
-	}
+    }
 
     void ProcessAutoMove(float distance)
     {
@@ -88,6 +87,8 @@ public class PlayerObject : MonoBehaviour {
 
     bool IsGrounded()
     {
-        return Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
+        return Physics2D.Linecast(transform.position, groundCheck[0].position, 1 << LayerMask.NameToLayer("Ground")) ||
+                        Physics2D.Linecast(transform.position, groundCheck[1].position, 1 << LayerMask.NameToLayer("Ground")) ||
+                        Physics2D.Linecast(transform.position, groundCheck[2].position, 1 << LayerMask.NameToLayer("Ground"));
     }
 }
