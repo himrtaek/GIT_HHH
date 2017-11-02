@@ -5,6 +5,18 @@ using UnityEditor;
 
 public static class BuildManager {
 
+    static string[] SCENES = FindEnabledEditorScenes();
+    private static string[] FindEnabledEditorScenes()
+    {
+        List<string> EditorScenes = new List<string>();
+        foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes)
+        {
+            if (!scene.enabled) continue;
+            EditorScenes.Add(scene.path);
+        }
+        return EditorScenes.ToArray();
+    }
+
 	static void SetKeyStore ()
     {
 		PlayerSettings.Android.keystoreName = "KeyStore.keystore";
@@ -18,10 +30,12 @@ public static class BuildManager {
 	{
         SetKeyStore();
 
-		BuildPlayerOptions bpo = new BuildPlayerOptions ();
-        bpo.scenes = new string[] { "Assets/Scenes/Splash.unity" };
+        int sceneSize = EditorBuildSettings.scenes.Length;
+
+        BuildPlayerOptions bpo = new BuildPlayerOptions ();
+        bpo.scenes = SCENES;
 		bpo.options = BuildOptions.Development | BuildOptions.AllowDebugging;
-		bpo.locationPathName = "Build/HHH.apk";
+		bpo.locationPathName = "../Build_Android/output.apk";
 		bpo.target = BuildTarget.Android;
 
 		BuildPipeline.BuildPlayer(bpo);
