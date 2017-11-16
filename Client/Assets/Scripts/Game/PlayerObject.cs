@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class PlayerObject : MonoBehaviour {
 
+    public bool leftStart = false;
+
     public float moveSpeed = 6.0f;
     public float jumpForce = 2000.0f;
 
-    public bool leftStart;
-    bool isLeftMove;
+    public Transform[] groundCheck;
+    public Transform[] sideCheck;
 
+    bool isLeftMove = false;
     bool isGround = false;
     bool isJumping = false;
     bool isStop = false;
-
-    public Transform[] groundCheck;
-    public Transform[] sideCheck;
 
     float elapsedTime = 0;
 
@@ -108,11 +108,6 @@ public class PlayerObject : MonoBehaviour {
         transform.Translate(moveVector);
     }
 
-    bool IsPossibleToAutoMove()
-    {
-        return true;
-    }
-
     bool IsKeyDown(KeyCode keyCode)
     {
         return Input.GetKeyDown(keyCode);
@@ -192,6 +187,7 @@ public class PlayerObject : MonoBehaviour {
                 }
             }
         }
+
         return r;
     }
 
