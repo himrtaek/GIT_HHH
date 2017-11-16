@@ -39,5 +39,19 @@ public static class BuildManager {
 		bpo.target = BuildTarget.Android;
 
 		BuildPipeline.BuildPlayer(bpo);
-	}
+    }
+
+    [MenuItem("Build/Build iOS")]
+    static void BuildiOS()
+    {
+        int sceneSize = EditorBuildSettings.scenes.Length;
+
+        BuildPlayerOptions bpo = new BuildPlayerOptions();
+        bpo.scenes = SCENES;
+        bpo.options = BuildOptions.Development | BuildOptions.AllowDebugging;
+        bpo.locationPathName = "../Build_iOS/output";
+        bpo.target = BuildTarget.iOS;
+
+        BuildPipeline.BuildPlayer(bpo);
+    }
 }
