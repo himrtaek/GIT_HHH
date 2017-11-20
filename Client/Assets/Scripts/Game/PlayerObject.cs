@@ -27,19 +27,9 @@ public class PlayerObject : MonoBehaviour {
         isLeftMove = leftStart;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         CheckGround();
-
-        if (isGround)
-        {
-            GetComponent<SpriteRenderer>().color = new Color(255, 255, 255);
-            isJumping = false;
-        }
-        else
-        {
-            GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
-        }
 
         elapsedTime += Time.deltaTime;
         if (elapsedTime < 1)
@@ -50,6 +40,19 @@ public class PlayerObject : MonoBehaviour {
         if (isStop == false)
         {
             ProcessAutoMove(Time.deltaTime * moveSpeed);
+        }
+    }
+
+    void Update()
+    {
+        if (isGround)
+        {
+            GetComponent<SpriteRenderer>().color = new Color(255, 255, 255);
+            isJumping = false;
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
         }
 
         if (IsKeyDown(turnKeyCode))
@@ -74,13 +77,15 @@ public class PlayerObject : MonoBehaviour {
             }
         }
 
-        if(Input.touchCount == 1)
+
+        if(Input.touchCount > 0 && 
+           Input.GetTouch(Input.touchCount - 1).phase == TouchPhase.Began)
         {
-            if(Input.touches[0].position.x > Screen.width / 2)
+            if(Input.GetTouch(Input.touchCount - 1).position.x > Screen.width / 2)
             {
                 Jump();
             }
-            else
+            else if (Input.GetTouch(Input.touchCount - 1).position.x <= Screen.width / 2)
             {
                 Turn();
             }
@@ -89,19 +94,25 @@ public class PlayerObject : MonoBehaviour {
 
     void ProcessAutoMove(float distance)
     {
-        Vector3 moveVector = Vector3.left * distance;
+        Vector3 moveVector = Vector3.zero;
         Vector3 sideVector = Vector3.zero;
-        CheckLinecast("Side", transform.position + moveVector, new Vector3[] { sideCheck[0].position }, out sideVector);
-        if (isLeftMove == false)
+
+        if (isLeftMove)
+        {
+            moveVector = Vector3.left * distance;
+            CheckLinecast("Side", transform.position + moveVector, new Vector3[] { sideCheck[0].position }, out sideVector);
+        }
+        else
         {
             moveVector = Vector3.right * distance;
-            CheckLinecast("Side",transform.position + moveVector, new Vector3[] { sideCheck[1].position }, out sideVector);
+            CheckLinecast("Side", transform.position + moveVector, new Vector3[] { sideCheck[1].position }, out sideVector);
         }
 
         if (sideVector != Vector3.zero)
         {
-            transform.position = sideVector;
+            transform.position = new Vector3(sideVector.x, transform.position.y, transform.position.y);
             Turn();
+            ProcessAutoMove(Time.deltaTime * moveSpeed);
             return;
         }
 
@@ -163,8 +174,8 @@ public class PlayerObject : MonoBehaviour {
                     float outboundSizeX = GetComponent<BoxCollider2D>().bounds.extents.x + coverHitList[i].collider.bounds.extents.x;
                     //if(distanceX <= outboundSizeX)
 
-                    Vector3 worldOriginPos = Camera.main.WorldToScreenPoint(originPos);
-                    Vector3 worldTargetPos = Camera.main.WorldToScreenPoint(coverHitList[i].transform.position);
+                    Vector3 worldOriginPos = originPos;
+                    Vector3 worldTargetPos = coverHitList[i].transform.position;
 
                     if (isLeftMove)
                     {
