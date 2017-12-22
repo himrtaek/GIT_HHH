@@ -100,12 +100,12 @@ public class PlayerObject : MonoBehaviour {
         if (isLeftMove)
         {
             moveVector = Vector3.left * distance;
-            CheckLinecast("Side", transform.position + moveVector, new Vector3[] { sideCheck[0].position }, out sideVector);
+            CheckLinecast("Side", transform.position, new Vector3[] { sideCheck[0].position}, out sideVector);
         }
         else
         {
             moveVector = Vector3.right * distance;
-            CheckLinecast("Side", transform.position + moveVector, new Vector3[] { sideCheck[1].position }, out sideVector);
+            CheckLinecast("Side", transform.position, new Vector3[] { sideCheck[1].position}, out sideVector);
         }
 
         if (sideVector != Vector3.zero)
@@ -158,7 +158,8 @@ public class PlayerObject : MonoBehaviour {
         foreach(Vector3 obj in checkObj)
         {
             RaycastHit2D[] coverHits;
-            coverHits = Physics2D.RaycastAll(originPos, obj, 20f);
+            float fRaycastDistance = originPos.x < obj.x ? 3f : -3f;
+            coverHits = Physics2D.RaycastAll(new Vector3(originPos.x + fRaycastDistance, originPos.y, originPos.z), obj, fRaycastDistance);
             coverHitList.AddRange(coverHits);
         }
 
@@ -166,13 +167,11 @@ public class PlayerObject : MonoBehaviour {
         {
             for (int i = 0; i < coverHitList.Count; i++)
             {
-                Debug.DrawLine(originPos, new Vector3(coverHitList[i].transform.position.x, originPos.y, coverHitList[i].transform.position.z), Color.cyan);
                 string objLayerName = LayerMask.LayerToName(coverHitList[i].transform.gameObject.layer);
                 if (objLayerName == layerName)
                 {
-                    //float distanceX = Mathf.Abs(coverHitList[i].transform.position.x - transform.position.x);
+                    Debug.DrawLine(originPos, new Vector3(coverHitList[i].transform.position.x, originPos.y, coverHitList[i].transform.position.z), Color.cyan);
                     float outboundSizeX = GetComponent<BoxCollider2D>().bounds.extents.x + coverHitList[i].collider.bounds.extents.x;
-                    //if(distanceX <= outboundSizeX)
 
                     Vector3 worldOriginPos = originPos;
                     Vector3 worldTargetPos = coverHitList[i].transform.position;
@@ -215,5 +214,56 @@ public class PlayerObject : MonoBehaviour {
         }
 
         isGround = false;
+    }
+}
+
+public static class DrawArrow
+{
+    public static void ForGizmo(Vector3 pos, Vector3 direction, float arrowHeadLength = 0.25f, float arrowHeadAngle = 20.0f, float arrowPosition = 0.5f)
+    {
+        ForGizmo(pos, direction, Gizmos.color, arrowHeadLength, arrowHeadAngle, arrowPosition);
+    }
+
+    public static void ForGizmo(Vector3 pos, Vector3 direction, Color color, float arrowHeadLength = 0.25f, float arrowHeadAngle = 20.0f, float arrowPosition = 0.5f)
+    {
+        Gizmos.color = color;
+        Gizmos.DrawRay(pos, direction);
+        DrawArrowEnd(true, pos, direction, color, arrowHeadLength, arrowHeadAngle, arrowPosition);
+    }
+
+    public static void ForDebug(Vector3 pos, Vector3 direction, float arrowHeadLength = 0.25f, float arrowHeadAngle = 20.0f, float arrowPosition = 0.5f)
+    {
+        ForDebug(pos, direction, Color.white, arrowHeadLength, arrowHeadAngle, arrowPosition);
+    }
+
+    public static void ForDebug(Vector3 pos, Vector3 direction, Color color, float arrowHeadLength = 0.25f, float arrowHeadAngle = 20.0f, float arrowPosition = 0.5f)
+    {
+        Debug.DrawRay(pos, direction, color);
+        DrawArrowEnd(false, pos, direction, color, arrowHeadLength, arrowHeadAngle, arrowPosition);
+    }
+    private static void DrawArrowEnd(bool gizmos, Vector3 pos, Vector3 direction, Color color, float arrowHeadLength = 0.25f, float arrowHeadAngle = 20.0f, float arrowPosition = 0.5f)
+    {
+        Vector3 right = (Quaternion.LookRotation(direction) * Quaternion.Euler(arrowHeadAngle, 0, 0) * Vector3.back) * arrowHeadLength;
+        Vector3 left = (Quaternion.LookRotation(direction) * Quaternion.Euler(-arrowHeadAngle, 0, 0) * Vector3.back) * arrowHeadLength;
+        Vector3 up = (Quaternion.LookRotation(direction) * Quaternion.Euler(0, arrowHeadAngle, 0) * Vector3.back) * arrowHeadLength;
+        Vector3 down = (Quaternion.LookRotation(direction) * Quaternion.Euler(0, -arrowHeadAngle, 0) * Vector3.back) * arrowHeadLength;
+
+        Vector3 arrowTip = pos + (direction * arrowPosition);
+
+        if (gizmos)
+        {
+            Gizmos.color = color;
+            Gizmos.DrawRay(arrowTip, right);
+            Gizmos.DrawRay(arrowTip, left);
+            Gizmos.DrawRay(arrowTip, up);
+            Gizmos.DrawRay(arrowTip, down);
+        }
+        else
+        {
+            Debug.DrawRay(arrowTip, right, color);
+            Debug.DrawRay(arrowTip, left, color);
+            Debug.DrawRay(arrowTip, up, color);
+            Debug.DrawRay(arrowTip, down, color);
+        }
     }
 }
