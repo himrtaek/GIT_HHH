@@ -24,6 +24,7 @@ public class PlayerObject : MonoBehaviour {
 
     void Awake()
     {
+        Debug.Log("Width = " + Screen.width.ToString() + ", Height = " + Screen.height.ToString());
         isLeftMove = leftStart;
     }
 
@@ -65,8 +66,10 @@ public class PlayerObject : MonoBehaviour {
             Jump();
         }
 
+#if UNITY_EDITOR
         if (Input.GetMouseButtonDown(0))
         {
+            Debug.Log(Input.mousePosition.ToString());
             if (Input.mousePosition.x > Screen.width / 2)
             {
                 Jump();
@@ -76,12 +79,14 @@ public class PlayerObject : MonoBehaviour {
                 Turn();
             }
         }
+#endif
 
 
         if(Input.touchCount > 0 && 
            Input.GetTouch(Input.touchCount - 1).phase == TouchPhase.Began)
         {
-            if(Input.GetTouch(Input.touchCount - 1).position.x > Screen.width / 2)
+            Debug.Log(Input.GetTouch(Input.touchCount - 1).position.ToString());
+            if (Input.GetTouch(Input.touchCount - 1).position.x > Screen.width / 2)
             {
                 Jump();
             }
