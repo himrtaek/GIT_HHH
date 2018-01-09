@@ -4,14 +4,26 @@ using UnityEngine;
 
 public class GameMain : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-        //StartCoroutine(AdManager.Instance.ShowAd());
-        Screen.SetResolution(Screen.width, Screen.width * 1080 / 1920, true);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    private static GameMain _instance;
+    public static GameMain Instance
+    {
+        get
+        {
+            if (!_instance)
+            {
+                GameObject container = new GameObject();
+                container.name = "GameMain";
+                _instance = container.AddComponent(typeof(GameMain)) as GameMain;
+            }
+
+            return _instance;
+        }
+    }
+
+    private int m_iCurGold;
+    public void AddGold()
+    {
+        m_iCurGold++;
+        Debug.Log("GetGold! CurGold : " + m_iCurGold.ToString());
+    }
 }
