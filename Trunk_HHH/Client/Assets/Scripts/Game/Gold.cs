@@ -16,6 +16,7 @@ public class Gold : MonoBehaviour {
         m_fElapsedTime += Time.deltaTime;
         if(m_fLifeTime <= m_fElapsedTime)
         {
+            GameMain.Instance.HeartBreak();
             Destroy(gameObject);
         }
 	}

@@ -24,6 +24,7 @@ public class PlayerObject : MonoBehaviour {
 
     void Awake()
     {
+        var a = GameMain.Instance;
         Debug.Log("Width = " + Screen.width.ToString() + ", Height = " + Screen.height.ToString());
         isLeftMove = leftStart;
     }
