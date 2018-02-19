@@ -16,13 +16,13 @@ public class FollowCam : MonoBehaviour
         float fDistance = transform.position.y - player.transform.position.y;
         if (Mathf.Abs(fDistance) > 30)
         {
-            
             if (fDistance >= 0)
             {
                 if (transform.position.y < fStartYPos)
                 {
                     return;
                 }
+
                 Move(Vector3.down * Mathf.Abs(fDistance) * 0.02f);
             }
             else
@@ -34,6 +34,11 @@ public class FollowCam : MonoBehaviour
 
     void Move(Vector3 moveVector)
     {
+        if(moveVector.y < 0 && transform.position.y + moveVector.y < fStartYPos)
+        {
+            moveVector.y = fStartYPos - transform.position.y;
+        }
+
         transform.Translate(moveVector);
 
         foreach(var trn in Sides)
